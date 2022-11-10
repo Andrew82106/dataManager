@@ -79,39 +79,18 @@
                        <div class="card col-4">
                            <img class="card-img-top" src="https://static.runoob.com/images/mix/img_avatar.png" alt="Card image" style="width:100%">
                            <div class="card-body">
-                               <h4 class="card-title">用户名</h4>
+                               <h4 class="card-title text-center">{{ UserName }}</h4>
                            </div>
                        </div>
                        <div class="col">
                             <br>
                             <br>
                             <br>
-                            <table class="table">
-                                <thead>
-                                  <tr>
-                                    <th>用户名</th>
-                                    <th>用户邮箱</th>
-                                    <th>用户注册时间</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>John</td>
-                                    <td>Doe</td>
-                                    <td>john@example.com</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Mary</td>
-                                    <td>Moe</td>
-                                    <td>mary@example.com</td>
-                                  </tr>
-                                  <tr>
-                                    <td>July</td>
-                                    <td>Dooley</td>
-                                    <td>july@example.com</td>
-                                  </tr>
-                                </tbody>
-                            </table>
+                            <div >
+                                <p class="display-5">用户：{{ UserName }}</p>
+                                <p class="h4">注册时间：{{ RegisterTime }}</p>
+                                <p class="h4">用户摘要：{{ BriefDescription }}</p>
+                            </div>
                         </div>
                    </div>
                    <br>

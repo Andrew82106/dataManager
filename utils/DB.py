@@ -11,6 +11,8 @@ from utils.configs import BC
 
 
 class DB:
+    __tableList = []
+
     def __init__(self):
         self.__db = pymysql.connect(host=BC.Mysql.Host, user=BC.Mysql.User, password=BC.Mysql.Password,
                                     port=BC.Mysql.Port)
@@ -99,7 +101,8 @@ class DB:
             self.__CreateDatabase(BC.Mysql.mainDatabase)
         self.__UseDatabase(BC.Mysql.mainDatabase)
         if SETTLED_TABLE.UserLoginTableInMysql not in self.__tableList[BC.Mysql.mainDatabase]:
-            self.__CreateTable(SETTLED_TABLE.UserLoginTableInMysql, SETTLED_TABLE.UserLoginTable, SETTLED_TABLE.UserLoginTablePrimaryKey)
+            self.__CreateTable(SETTLED_TABLE.UserLoginTableInMysql, SETTLED_TABLE.UserLoginTable,
+                               SETTLED_TABLE.UserLoginTablePrimaryKey)
         # self.UseTable(SETTLED_TABLE.UserLoginTableInMysql)
         X_ = self.__Run("select UserID from {} where Name='{}'".format(SETTLED_TABLE.UserLoginTableInMysql, UserName))
         if len(X_):  # 说明有重复的用户名
@@ -111,7 +114,8 @@ class DB:
         UserID = X_[0][0]
         # 1
         if SETTLED_TABLE.UserInfoTableInMysql not in self.__tableList[BC.Mysql.mainDatabase]:
-            self.__CreateTable(SETTLED_TABLE.UserInfoTableInMysql, SETTLED_TABLE.UserInfoTable, SETTLED_TABLE.UserInfoTablePrimaryKey)
+            self.__CreateTable(SETTLED_TABLE.UserInfoTableInMysql, SETTLED_TABLE.UserInfoTable,
+                               SETTLED_TABLE.UserInfoTablePrimaryKey)
         # self.UseTable(SETTLED_TABLE.UserInfoTableInMysql)
         command = "INSERT INTO {}".format(SETTLED_TABLE.UserInfoTableInMysql)
         command += "(UserID,RegisterTime) values('{}',NOW())".format(UserID)
@@ -123,8 +127,51 @@ class DB:
         # 3
         return 1
 
+    def DeleteUser(self, UserName: str):
+        SETTLED_TABLE = BC.Mysql.SettledTable
+        self.__UseDatabase(BC.Mysql.mainDatabase)
+        X_ = self.__Run("select UserID from {} where Name='{}'".format(SETTLED_TABLE.UserLoginTableInMysql, UserName))
+        if not len(X_):
+            raise Exception("ERROR::不存在{}用户".format(UserName))
+        if len(X_) != 1:
+            raise Exception("FATAL::出现了多个同名用户")
+        UserID = X_[0][0]
+        command = "delete from {} where Name = '{}'".format(SETTLED_TABLE.UserLoginTableInMysql, UserName)
+        self.__Run(command)
+        command = "delete from {} where UserID = '{}'".format(SETTLED_TABLE.UserInfoTableInMysql, UserID)
+        self.__Run(command)
+        self.__DeleteTable(SETTLED_TABLE.UserSourceTableInMysql.format(UserID))
+
+    def QueryUserPas(self, UserName: str):
+        SETTLED_TABLE = BC.Mysql.SettledTable
+        self.__UseDatabase(BC.Mysql.mainDatabase)
+        X_ = self.__Run("select Password from {} where Name='{}'".format(SETTLED_TABLE.UserLoginTableInMysql, UserName))
+        if not len(X_):
+            raise Exception("ERROR::不存在{}用户".format(UserName))
+        if len(X_) != 1:
+            raise Exception("FATAL::出现了多个同名用户")
+        return X_[0][0]
+
+    def QueryUserInfo(self, UserName: str):
+        SETTLED_TABLE = BC.Mysql.SettledTable
+        self.__UseDatabase(BC.Mysql.mainDatabase)
+        X_ = self.__Run("select UserID from {} where Name='{}'".format(SETTLED_TABLE.UserLoginTableInMysql, UserName))
+        if not len(X_):
+            raise Exception("ERROR::不存在{}用户".format(UserName))
+        if len(X_) != 1:
+            raise Exception("FATAL::出现了多个同名用户")
+        UserID = X_[0][0]
+
+        X_ = self.__Run("select RegisterTime from {} where UserID='{}'".format(SETTLED_TABLE.UserInfoTableInMysql, UserID))
+        RegisterTime = X_[0][0]
+        X_ = self.__Run(
+            "select BriefDescription from {} where UserID='{}'".format(SETTLED_TABLE.UserInfoTableInMysql, UserID))
+        return RegisterTime, X_[0][0]
+
 
 if __name__ == '__main__':
     db = DB()
-    db.AddUser("Andrew82dsaf106", "123weadsqf6")
+    db.AddUser("root", "1234567890")
+    # db.DeleteUser("Andrewfg82dsaf106")
+    print(db.QueryUserPas("root"))
     print("end")

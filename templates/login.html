@@ -6,7 +6,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  {#<link href="../static/css/login.css" rel="stylesheet" type="text/css" media="all" />#}
 <link href="{{url_for("static", filename="css/login.css")}}" rel="stylesheet" type="text/css" media="all" />
-
+    <!-- Bootstrap core CSS -->
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 </head>
 <body>
 
@@ -14,23 +15,22 @@
 	<div class="main-w3layouts wrapper">
 		<div class="main-agileinfo">
 			<div class="agileits-top">
-				<form action="/login/" method="post">
-                    <!-- required=""：用户名不能为空  -->
-					<input class="text" type="text" name="username" placeholder="用户名" required="">
-					<input class="text" type="password" name="password" placeholder="密码" required="">
-					<div class="wthree-text">
-						<ul>
-							<li>
-								<label class="anim">
-									<input type="checkbox" class="checkbox" >
-									<span> 记住 ?</span>
-								</label>
-							</li>
-							<li><a href="#">忘记密码 ?</a> </li>
-						</ul>
-						<div class="clear"> </div>
-					</div>
-					<input type="submit" value="登录">
+                <br>
+                <br>
+                <div class="h2 text-center text-white">Login</div>
+				<form method="post">
+                    {{ form.csrf_token }} <!-- 渲染CSRF令牌隐藏字段 -->
+					<!--<input class="text" type="text" name="username" placeholder="用户名" required="">-->
+					<!--<input class="text" type="password" name="password" placeholder="密码" required="">-->
+					<!--<input type="submit" value="登录">-->
+                    {{ form.UserName(class='text') }}
+                <br><br>
+                    {{ form.PassWord(class='text') }}
+                <br><br>
+                    {% for message in get_flashed_messages() %}
+                        <p class="lead text-muted">{{ message }}</p>
+                    {%  endfor %}
+                    {{ form.SubmitButton }}
 				</form>
 				<p>创建一个账号? <a href="/register/"> 立即注册!</a></p>
 			</div>
