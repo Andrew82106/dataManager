@@ -140,6 +140,18 @@ class DB:
         SourceID = X_[0][0]
         return SourceID
 
+    def QueryAllUser(self):
+        SETTLED_TABLE = BC.Mysql.SettledTable
+        if BC.Mysql.mainDatabase not in self.__tableList:
+            # self.__CreateDatabase(BC.Mysql.mainDatabase)
+            raise Exception("ERROR::未创建origin数据库")
+        self.__UseDatabase(BC.Mysql.mainDatabase)
+        X_ = self.__Run("select Name from {}".format(SETTLED_TABLE.UserLoginTableInMysql))
+        RES = []
+        for I in X_:
+            RES.append(I[0])
+        return RES
+
     def AddUser(self, UserName: str, Password: str):
         """
         增加一个用户，1：在用户登录表中增加用户，2：同时在用户信息表中增加用户，3：同时增加用户的用户资源表
@@ -333,16 +345,16 @@ if __name__ == '__main__':
     db = DB()
     print("::debug::完成初始化")
     # db.AddUser("Tomy", "123321")
-    db.AddUser("root", "123321")
+    # db.AddUser("root", "123321")
     # x = db.QueryUserInfo("root")
-    db.UploadResource("S1.zip", "ROOT", 23.3, "root")
-    db.UploadResource("S2.zip", "ROOT", 23.3, "root")
-    db.UploadResource("S3.zip", "ROOT", 23.3, "root")
+    # db.UploadResource("S1.zip", "ROOT", 23.3, "root")
+    # db.UploadResource("S2.zip", "ROOT", 23.3, "root")
+    # db.UploadResource("S3.zip", "ROOT", 23.3, "root")
     # print("::debug::插入函数执行完后查询所有资源:{}".format(db.QueryAllResources()))
-    x = db.QueryUserResources("root")
+    # x = db.QueryUserResources("root")
     # print("::debug::查询函数执行完后查询所有资源:{}".format(db.QueryAllResources()))
-    print(x)
-    x = db.QueryResourcesByID(1)
+    # print(x)
+    x = db.QueryAllUser()
     print(x)
     # print("::debug::程序结束前查询所有资源:{}".format(db.QueryAllResources()))
     print("end")

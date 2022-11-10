@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, flash, session
 from flask_wtf.form import FlaskForm
 from wtforms import SubmitField, StringField, PasswordField
-from wtforms.validators import InputRequired, Length
+from wtforms.validators import InputRequired, Length, EqualTo, DataRequired
 from utils.DB import DB
 
 db = DB()
@@ -17,7 +17,18 @@ class LoginForm(FlaskForm):
     SubmitButton = SubmitField("提交")
 
 
-@app.route('/mainview/')
+class RegisterForm(FlaskForm):
+    UserName1 = StringField(u"用户名", validators=[DataRequired(),
+                                                 Length(min=3, max=20)])
+    PassWord1 = PasswordField(u"用户密码", validators=[DataRequired(),
+                                                     Length(min=6, max=20)])
+    PassWordConfirm1 = PasswordField(u"用户密码确认", validators=[DataRequired(),
+                                                                Length(min=6, max=20),
+                                                                EqualTo("PassWord1")])
+    SubmitButton1 = SubmitField(u"提交")
+
+
+@app.route('/mainview/', methods=['GET', 'POST'])
 def hello_world():  # 这是视图函数
     UserName = session.get("UserName")
     if UserName is None:
@@ -33,7 +44,7 @@ def hello_world():  # 这是视图函数
                            NumOfSources=len(UserSourceList), SourceDetails=SourceDetails)
 
 
-@app.route('/', methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     Form = LoginForm()
     if Form.validate_on_submit():
@@ -48,12 +59,12 @@ def login():
                 session['UserName'] = Name
                 return redirect(url_for("hello_world", UserName=Name))
             else:
-                flash("密码错误")
                 print("Login Failed")
+                flash("密码错误")
                 return redirect(url_for("login"))
         except Exception as e:
-            flash("用户名错误")
             print(e)
+            flash("用户名错误")
             return redirect(url_for("login"))
     return render_template("login.html", form=Form)
 
@@ -62,6 +73,32 @@ def login():
 def Out():
     session.clear()
     return redirect(url_for("login"))
+
+
+@app.route('/register', methods=['POST', 'GET'])
+def Register():
+    Form = RegisterForm()
+    print("INFUN")
+    print(Form.errors)
+    if Form.is_submitted():
+        if not Form.validate() or Form.UserName1.data in db.QueryAllUser():
+            if Form.PassWord1.data != Form.PassWordConfirm1.data:
+                flash("两次密码不一致")
+                return redirect(url_for("Register"))
+            UserName = Form.UserName1.data
+            Password = Form.PassWord1.data
+            if db.AddUser(UserName, Password) == 0:
+                flash("已存在用户")
+                return redirect(url_for("Register"))
+            else:
+                print("注册成功")
+                return redirect(url_for("login"))
+        UserName = Form.UserName1.data
+        Password = Form.PassWord1.data
+        db.AddUser(UserName, Password)
+        print("注册成功")
+        return redirect(url_for("login"))
+    return render_template("register.html", Form=Form)
 
 
 if __name__ == '__main__':

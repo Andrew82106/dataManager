@@ -17,19 +17,17 @@
 			<div class="agileits-top">
                 <br>
                 <br>
-                <div class="h2 text-center text-white">Login</div>
+                <div class="h2 text-center text-white">Register</div>
 				<form method="post">
-                    {{ form.csrf_token }}
-                    {{ form.UserName(class='text') }}
-                    <br><br>
-                    {{ form.PassWord(class='text') }}
-                    <br><br>
+                    {{ Form.csrf_token }}
+                    {{ Form.UserName1.label(class="text-white") }}:{{ Form.UserName1(class='text') }}
+                    {{ Form.PassWord1.label(class="text-white") }}:{{ Form.PassWord1(class='text') }}
+                    {{ Form.PassWordConfirm1.label(class="text-white") }}:{{ Form.PassWordConfirm1(class='text') }}
                     {% for message in get_flashed_messages() %}
-                        <p class="lead text-muted">{{ message }}</p>
+                        <p class="text-muted">{{ message }}</p>
                     {%  endfor %}
-                {{ form.SubmitButton }}
+                    {{ Form.SubmitButton1 }}
 				</form>
-				<p>创建一个账号? <a href="/register"> 立即注册!</a></p>
 			</div>
 		</div>
 
