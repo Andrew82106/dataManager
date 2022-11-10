@@ -20,12 +20,14 @@ class BaseConfig:
                 "UserID": "INT UNSIGNED AUTO_INCREMENT",
                 "Name": "VARCHAR(30)",
                 "Password": "VARCHAR(30)",
-                "RegisterTime": "DATE",
-                "BriefDescription": "TEXT",
+                "RegisterTime": "DATETIME",
+                "BriefDescription": "VARCHAR(200)",
                 "SourceID": "INT UNSIGNED AUTO_INCREMENT",
-                "SourceName": "TEXT",
-                "SourceLocation": "TEXT",
-                "SourceSize": "FLOAT"
+                "SourceName": "VARCHAR(100)",
+                "SourceLocation": "VARCHAR(100)",
+                "SourceSize": "FLOAT",
+                "SourceIntroduction": "TEXT",
+                "SourceUploadTime": "DATETIME"
             }
             UserLoginTable = [  # 用户登录表
                 "UserID",
@@ -43,12 +45,19 @@ class BaseConfig:
             UserInfoTableInMysql = "clientInfo"  # 用户信息表在mysql中的表名
             UserSourceTable = [  # 用户资源表
                 "SourceID",
-                "SourceName",
-                "SourceLocation",
-                "SourceSize"
             ]
             UserSourceTablePrimaryKey = "SourceID"
             UserSourceTableInMysql = "user{}SourceInfo"  # 用户资源表在mysql中的表名
+            AllSourceTable = [  # 资源汇总表
+                "SourceID",
+                "SourceName",
+                "SourceLocation",
+                "SourceSize",
+                "SourceIntroduction",
+                "SourceUploadTime",
+            ]
+            AllSourceTablePrimaryKey = "SourceID"
+            AllSourceTableInMysql = "allSource"  # 资源汇总表在mysql中的表名
 
 
 BC = BaseConfig()

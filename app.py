@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, redirect, flash
+from flask import Flask, render_template, url_for, redirect, flash, session
 from flask_wtf.form import FlaskForm
-from wtforms import TextAreaField, SubmitField, StringField, PasswordField
+from wtforms import SubmitField, StringField, PasswordField
 from wtforms.validators import InputRequired, Length
 from utils.DB import DB
 
@@ -17,10 +17,20 @@ class LoginForm(FlaskForm):
     SubmitButton = SubmitField("提交")
 
 
-@app.route('/mainview/<UserName>')
-def hello_world(UserName: str):  # 这是视图函数
+@app.route('/mainview/')
+def hello_world():  # 这是视图函数
+    UserName = session.get("UserName")
+    if UserName is None:
+        return redirect(url_for("login"))
     RegisterTime, BriefDesc = db.QueryUserInfo(UserName)
-    return render_template("dashboard.html", UserName=UserName, RegisterTime=RegisterTime, BriefDescription=BriefDesc)
+    UserSourceList = db.QueryUserResources(UserName)
+    # UserSourceList:((1,),(2,),(3,),(4,),(5,)...)
+    SourceDetails = []
+    for ID in UserSourceList:
+        Detail = db.QueryResourcesByID(ID[0])[0]
+        SourceDetails.append([Detail[0], Detail[1], Detail[2], Detail[3], Detail[4], Detail[5]])
+    return render_template("dashboard.html", UserName=UserName, RegisterTime=RegisterTime, BriefDescription=BriefDesc,
+                           NumOfSources=len(UserSourceList), SourceDetails=SourceDetails)
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -35,6 +45,7 @@ def login():
             x = db.QueryUserPas(Name)
             if x == Pas:
                 print("Login Success")
+                session['UserName'] = Name
                 return redirect(url_for("hello_world", UserName=Name))
             else:
                 flash("密码错误")
@@ -43,7 +54,14 @@ def login():
         except Exception as e:
             flash("用户名错误")
             print(e)
+            return redirect(url_for("login"))
     return render_template("login.html", form=Form)
+
+
+@app.route('/logout', methods=['POST', 'GET'])
+def Out():
+    session.clear()
+    return redirect(url_for("login"))
 
 
 if __name__ == '__main__':
