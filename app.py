@@ -31,7 +31,7 @@ class RegisterForm(FlaskForm):
 
 
 class UploadData(FlaskForm):
-    photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+    photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'zip', '7z', 'pdf', 'xlsx', 'rar'])])
     fileName = StringField("资源名", validators=[DataRequired(),
                                                    Length(min=3, max=20)])
     submit = SubmitField()
