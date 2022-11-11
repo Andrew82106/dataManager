@@ -1,9 +1,11 @@
-from flask import Flask, render_template, url_for, redirect, flash, session
+from flask import Flask, render_template, url_for, redirect, flash, session, send_from_directory
 from flask_wtf.form import FlaskForm
 from wtforms import SubmitField, StringField, PasswordField
 from wtforms.validators import InputRequired, Length, EqualTo, DataRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from utils.DB import DB
-
+from utils.ConfigLocation import ConfiglocalSources
+import os
 db = DB()
 app = Flask(__name__)  # 开头必写，创建一个Flask对象从而进行后续操作
 app.config["SECRET_KEY"] = "ABCDsdfcmndqidadFWA"  # 为防CSRF提供一个密匙
@@ -19,17 +21,25 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     UserName1 = StringField(u"用户名", validators=[DataRequired(),
-                                                 Length(min=3, max=20)])
+                                                   Length(min=3, max=20)])
     PassWord1 = PasswordField(u"用户密码", validators=[DataRequired(),
-                                                     Length(min=6, max=20)])
+                                                       Length(min=6, max=20)])
     PassWordConfirm1 = PasswordField(u"用户密码确认", validators=[DataRequired(),
-                                                                Length(min=6, max=20),
-                                                                EqualTo("PassWord1")])
+                                                                  Length(min=6, max=20),
+                                                                  EqualTo("PassWord1")])
     SubmitButton1 = SubmitField(u"提交")
+
+
+class UploadData(FlaskForm):
+    photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+    fileName = StringField("资源名", validators=[DataRequired(),
+                                                   Length(min=3, max=20)])
+    submit = SubmitField()
 
 
 @app.route('/mainview/', methods=['GET', 'POST'])
 def hello_world():  # 这是视图函数
+    Up = UploadData()
     UserName = session.get("UserName")
     if UserName is None:
         return redirect(url_for("login"))
@@ -40,8 +50,21 @@ def hello_world():  # 这是视图函数
     for ID in UserSourceList:
         Detail = db.QueryResourcesByID(ID[0])[0]
         SourceDetails.append([Detail[0], Detail[1], Detail[2], Detail[3], Detail[4], Detail[5]])
+    if Up.validate_on_submit():
+        f = Up.photo.data
+        filename = Up.fileName.data
+        f.save(os.path.join(ConfiglocalSources(), f.filename))
+        SIZE = os.path.getsize(os.path.join(ConfiglocalSources(), f.filename))
+        db.UploadResource(filename, "::{}".format(f.filename), SIZE/(1024*1024), UserName)
+        return redirect(url_for("hello_world"))
     return render_template("dashboard.html", UserName=UserName, RegisterTime=RegisterTime, BriefDescription=BriefDesc,
-                           NumOfSources=len(UserSourceList), SourceDetails=SourceDetails)
+                           NumOfSources=len(UserSourceList), SourceDetails=SourceDetails, Up=Up)
+
+
+@app.route('/download/<FileName>', methods=['GET', 'POST'])
+def Download(FileName: str):
+
+    return send_from_directory(ConfiglocalSources(), FileName.replace("::", ""), as_attachment=True)
 
 
 @app.route('/', methods=['GET', 'POST'])

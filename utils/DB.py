@@ -27,8 +27,6 @@ class DB:
             self.__CreateDatabase(BC.Mysql.mainDatabase)
         SETTLED_TABLE = BC.Mysql.SettledTable
         self.__UseDatabase(BC.Mysql.mainDatabase)
-        # if SETTLED_TABLE.UserSourceTableInMysql not in self.__tableList[BC.Mysql.mainDatabase]:
-        # self.__CreateTable(SETTLED_TABLE.UserSourceTableInMysql, SETTLED_TABLE.UserSourceTable, SETTLED_TABLE.UserSourceTablePrimaryKey)
         if SETTLED_TABLE.UserInfoTableInMysql not in self.__tableList[BC.Mysql.mainDatabase]:
             self.__CreateTable(SETTLED_TABLE.UserInfoTableInMysql, SETTLED_TABLE.UserInfoTable,
                                SETTLED_TABLE.UserInfoTablePrimaryKey)
@@ -59,14 +57,6 @@ class DB:
         self.__cursor.execute("use {}".format(dataBase))
         self.__Database = dataBase
         self.__Table = ""
-
-    """def UseTable(self, _table: str):
-        if self.Database == "":
-            raise Exception("ERROR::还未指定数据库")
-        if _table not in self.tableList[self.Database]:
-            raise Exception("ERROR::数据库{}不存在表{}".format(self.Database, _table))
-        self.cursor.execute("use {}".format(_table))
-        self.Table = _table"""
 
     def __CreateDatabase(self, dataBase: str):
         if dataBase in self.__tableList:
@@ -347,7 +337,7 @@ if __name__ == '__main__':
     # db.AddUser("Tomy", "123321")
     # db.AddUser("root", "123321")
     # x = db.QueryUserInfo("root")
-    # db.UploadResource("S1.zip", "ROOT", 23.3, "root")
+    db.UploadResource("S1.zip", "ROOT", 23.3, "root")
     # db.UploadResource("S2.zip", "ROOT", 23.3, "root")
     # db.UploadResource("S3.zip", "ROOT", 23.3, "root")
     # print("::debug::插入函数执行完后查询所有资源:{}".format(db.QueryAllResources()))

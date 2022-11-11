@@ -21,6 +21,11 @@ def ConfigUtils():
     return path
 
 
+def ConfiglocalSources():
+    path = os.path.join(ConfigRootLoc(), "localSources")
+    return path
+
+
 if __name__ == '__main__':
     print(ConfigRootLoc())
     print(ConfigStatic())
