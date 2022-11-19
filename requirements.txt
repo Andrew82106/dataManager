@@ -4,3 +4,4 @@ wtforms~=3.0.1
 gunicorn
 gevent
 flask_wtf
+pycrypto~=2.6.1

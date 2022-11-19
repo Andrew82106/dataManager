@@ -1,5 +1,5 @@
 FROM python:3.8
-WORKDIR /Project/demo
+WORKDIR /Project/dataManager
 
 COPY requirements.txt ./
 RUN pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple

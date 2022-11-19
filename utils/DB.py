@@ -38,6 +38,10 @@ class DB:
                                SETTLED_TABLE.AllSourceTablePrimaryKey)
         # 如果没有创建对应的表，就先创建
 
+    def reConnect(self):
+        self.__db.close()
+        self.__init__()
+
     def __del__(self):
         # print("::debug::销毁db实例前查询所有资源:{}".format(self.QueryAllResources()))
         self.__db.close()

@@ -31,7 +31,7 @@ class RegisterForm(FlaskForm):
 
 
 class UploadData(FlaskForm):
-    photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'zip', '7z', 'pdf', 'xlsx', 'rar'])])
+    photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['xls', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif', 'zip', '7z', 'pdf', 'xlsx', 'rar'])])
     fileName = StringField("资源名", validators=[DataRequired(),
                                                    Length(min=3, max=20)])
     submit = SubmitField()
@@ -63,12 +63,12 @@ def hello_world():  # 这是视图函数
 
 @app.route('/download/<FileName>', methods=['GET', 'POST'])
 def Download(FileName: str):
-
     return send_from_directory(ConfiglocalSources(), FileName.replace("::", ""), as_attachment=True)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    db.reConnect()
     Form = LoginForm()
     if Form.validate_on_submit():
         Name = Form.UserName.data

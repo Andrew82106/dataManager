@@ -28,5 +28,5 @@ def ConfiglocalSources():
 
 if __name__ == '__main__':
     print(ConfigRootLoc())
-    print(ConfigStatic())
-    print(ConfigTemplate())
+    # print(ConfigStatic())
+    # print(ConfigTemplate())
